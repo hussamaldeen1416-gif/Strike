@@ -12,10 +12,17 @@ export const WEAPONS = [
   {id:'dmr', n:'بندقية دقيقة',  t:'نصف آلية',   dmg:46, hm:1.6, rpm:330, mag:15, res:60, rl:2.4, hip:2.6, ads:0.15, rec:1.3, r0:45, r1:90, dmin:0.8, spd:0.93, zoom:2.2, auto:0, model:'dmr'},
   {id:'pst', n:'مسدس',          t:'سلاح ثانوي', dmg:30, hm:1.4, rpm:420, mag:12, res:48, rl:1.4, hip:1.8, ads:0.7, rec:0.9, r0:12, r1:28, dmin:0.6, spd:1.08, zoom:1.2, auto:0, model:'pistol'},
   {id:'kn',  n:'سكين',          t:'قتال قريب',  dmg:100, melee:1, rpm:110, mag:0, res:0, rl:0, hip:0, ads:0, rec:0, r0:2.4, r1:2.4, dmin:1, spd:1.1, zoom:1, auto:0, model:'knife'},
+  {id:'scar',n:'سكار',          t:'رشاش هجومي', dmg:34, hm:1.5, rpm:560, mag:20, res:120, rl:2.2, hip:2.6, ads:0.5, rec:1.0, r0:35, r1:65, dmin:0.72, spd:0.93, zoom:1.5, auto:1, model:'scar'},
+  {id:'uzi', n:'عوزي',          t:'رشاش خفيف',  dmg:17, hm:1.3, rpm:1000, mag:32, res:224, rl:1.7, hip:3.0, ads:1.4, rec:0.35, r0:9, r1:22, dmin:0.55, spd:1.08, zoom:1.2, auto:1, model:'uzi'},
+  {id:'aug', n:'أوغ',           t:'رشاش هجومي', dmg:25, hm:1.5, rpm:750, mag:30, res:150, rl:2.3, hip:2.4, ads:0.35, rec:0.5, r0:30, r1:60, dmin:0.72, spd:0.95, zoom:1.7, auto:1, model:'aug'},
+  {id:'asg', n:'شوزن آلي',      t:'بندقية صيد', dmg:12, pel:8, hm:1.2, rpm:220, mag:8, res:40, rl:2.8, hip:6.5, ads:5.2, rec:1.6, r0:5, r1:13, dmin:0.25, spd:0.98, zoom:1.15, auto:0, model:'sg2'},
+  {id:'bar', n:'قنّاص ثقيل',     t:'بندقية قنص', dmg:160, hm:1.5, rpm:34, mag:5, res:20, rl:3.4, hip:8.0, ads:0.0, rec:4.5, r0:120, r1:200, dmin:0.9, spd:0.82, zoom:5.0, scope:1, auto:0, model:'barrett'},
+  {id:'dgl', n:'ديزرت إيقل',    t:'سلاح ثانوي', dmg:52, hm:1.5, rpm:200, mag:7, res:35, rl:1.9, hip:2.4, ads:0.6, rec:2.2, r0:15, r1:35, dmin:0.65, spd:1.06, zoom:1.25, auto:0, model:'deagle'},
 ];
-export const PRIMARIES = [0,1,2,3,4,5,6];
+export const PRIMARIES = [0,1,2,3,4,5,6,9,10,11,12,13];
+export const SECONDARIES = [7,14];
 export const PISTOL = 7, KNIFE = 8;
-export const GUNGAME = [7,2,3,1,0,5,6,4,8];
+export const GUNGAME = [7,14,10,2,3,1,9,11,5,6,4,8];
 export const NADE = {dmg:120, rad:5.5, fuse:2.1, n:2};
 
 export const CHARS = [
@@ -27,6 +34,37 @@ export const CHARS = [
   {n:'ريم',  d:'الاستطلاع',     shirt:0x93303d, pants:0x2b2b33, vest:0x3a3a44, skin:0xe0b08a, boots:0x1a1a1a, head:'cap',     hc:[0x222326,0x4a2e1a]},
   {n:'ثلج',  d:'وحدة الجبال',   shirt:0xe6ebf0, pants:0xcfd6dd, vest:0x9aa6b2, skin:0xe8b896, boots:0x6a7480, head:'snow',    hc:[0xf4f6f8,0x46c2ff], camo:1},
   {n:'عقرب', d:'المرتزقة',      shirt:0xd9771f, pants:0x3a3a3a, vest:0x2a2a2a, skin:0xb5835a, boots:0x1a1a1a, head:'gasmask', hc:[0x2a2a2a,0x9aa0a6]},
+  {n:'بدر',  d:'الضفادع البشرية', shirt:0x1d2b3a, pants:0x16212c, vest:0x2b3d4f, skin:0xc68c5a, boots:0x0f141a, head:'navy',   hc:[0x1d2b3a,0x46c2ff]},
+  {n:'جازي', d:'فارس البادية',  shirt:0xe8e0cc, pants:0x6b5a44, vest:0x5a3a22, skin:0xb5835a, boots:0x3a2a1a, head:'ghutra',  hc:[0xc0392b,0xf4f4f2]},
+  {n:'نورة', d:'قنّاصة الظل',   shirt:0x3b4a3a, pants:0x2e3a2d, vest:0x4a5a44, skin:0xe0b08a, boots:0x1f1f1f, head:'hood',    hc:[0x3b4a3a,0x1a1a1a], camo:1},
+  {n:'رعد',  d:'المدرّع الثقيل', shirt:0x3a3f46, pants:0x2c3036, vest:0x5d6670, skin:0xc68c5a, boots:0x1a1a1a, head:'heavy',   hc:[0x4a525c,0xff6a2e], bulk:1.18},
+  {n:'سيف',  d:'القوات الخاصة', shirt:0x1c2a44, pants:0x161f30, vest:0x101826, skin:0xd9a274, boots:0x0d0d0d, head:'police',  hc:[0x101826,0xd4af37]},
+  {n:'ظل',   d:'النينجا',       shirt:0x161618, pants:0x0e0e10, vest:0x222226, skin:0xd9a274, boots:0x0a0a0a, head:'ninja',   hc:[0x141416,0xc0392b]},
+];
+// weapon skins: c1/m1 = body, c2/m2 = wood & furniture, c3/m3 = dark small parts. k = total kills needed
+export const WSKINS = [
+  {n:'أصلي',      k:0,   sw:[0x2d2f33,0x7a4a24]},
+  {n:'صحراوي',    k:0,   c1:0xc2a272, m1:13, c2:0x8a6a44, m2:13, sw:[0xc2a272,0x8a6a44]},
+  {n:'غابة',      k:0,   c1:0x56703c, m1:13, c2:0x2e3b24, m2:13, sw:[0x56703c,0x2e3b24]},
+  {n:'ثلجي',      k:0,   c1:0xe8edf2, m1:13, c2:0xaab4be, m2:13, sw:[0xe8edf2,0xaab4be]},
+  {n:'أحمر ناري', k:10,  c1:0xc0392b, m1:6, c2:0x1a1a1a, m2:6, sw:[0xc0392b,0x1a1a1a]},
+  {n:'أزرق ملكي', k:25,  c1:0x2b5291, m1:6, c2:0xd4af37, m2:6, sw:[0x2b5291,0xd4af37]},
+  {n:'كربون',     k:40,  c1:0x2a2c30, m1:14, c2:0x55595f, m2:14, c3:0x111111, sw:[0x2a2c30,0x55595f]},
+  {n:'ذهبي',      k:75,  c1:0xd4af37, m1:6, c2:0x2a2a2a, m2:6, c3:0xb8902a, m3:6, sw:[0xd4af37,0xb8902a]},
+  {n:'نيون',      k:120, c1:0x14181d, m1:6, c2:0x00e5ff, m2:15, c3:0x00e5ff, m3:15, sw:[0x14181d,0x00e5ff]},
+  {n:'كريستال',   k:200, c1:0x2f9fd0, m1:15, c2:0x7fd8f5, m2:15, c3:0x1d5f80, m3:6, sw:[0x2f9fd0,0x7fd8f5]},
+];
+// character outfits (any character). k = total kills needed
+export const CSKINS = [
+  {n:'أصلي',   k:0},
+  {n:'ليلي',   k:0,   shirt:0x22262c, pants:0x1a1d22, vest:0x2f343b, boots:0x111111, camo:0},
+  {n:'صحراوي', k:0,   shirt:0xc8a46e, pants:0x8a6a44, vest:0x6b5a3a, camo:1},
+  {n:'غابة',   k:5,   shirt:0x56703c, pants:0x3c4f2c, vest:0x657548, camo:1},
+  {n:'ثلجي',   k:15,  shirt:0xe6ebf0, pants:0xcfd6dd, vest:0x9aa6b2, camo:1, h0:0xf4f6f8},
+  {n:'دموي',   k:30,  shirt:0x8a1c24, pants:0x2a2a2a, vest:0x1a1a1a, h0:0x8a1c24, camo:0},
+  {n:'ملكي',   k:60,  shirt:0x1f3a6e, pants:0x1a2236, vest:0xd4af37, vm:6, h0:0xd4af37, camo:0},
+  {n:'نيون',   k:100, shirt:0x14181d, pants:0x101317, vest:0x00e5ff, vm:15, h1:0x00e5ff, camo:0},
+  {n:'ذهبي',   k:150, shirt:0xd4af37, pants:0x2a2a2a, vest:0xb8902a, vm:6, h0:0xd4af37, camo:0},
 ];
 export const BOTNAMES = ['سالم','مشاري','نايف','بدر','حمد','راشد','ماجد','زياد','وليد','فيصل','عمر','يوسف','سلطان','هزاع'];
 
