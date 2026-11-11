@@ -228,7 +228,7 @@ export function createRenderer(canvas, opts={}){
     camera(ex,ey,ez,yaw,pitch,fov){
       const asp=canvas.width/canvas.height; R.fov=fov; R.eye[0]=ex; R.eye[1]=ey; R.eye[2]=ez;
       M4.persp(R.proj, fov, asp, 0.05, 260); M4.view(R.view, ex,ey,ez, yaw,pitch); M4.mul(R.vp, R.proj, R.view); M4.invert(R.ivp, R.vp);
-      M4.persp(R.vmProj, 1.0, asp, 0.01, 10);
+      M4.persp(R.vmProj, Math.min(1.32, Math.max(1.0, Math.sqrt(2.1/asp))), asp, 0.01, 10); // squarer screens (iPad) get a smaller gun
       R.yaw=yaw; R.pitch=pitch;
     },
     // world point -> screen px (or null when behind)

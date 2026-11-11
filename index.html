@@ -135,6 +135,7 @@ input.inp:focus{border-color:var(--acc)}
 #ov{position:fixed;inset:0;z-index:15;pointer-events:none}
 #ov>*{pointer-events:auto}
 .ovb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(5,6,10,.6)}
+#ov>.ovb.pass{pointer-events:none;background:rgba(0,0,0,.25);align-items:flex-start;padding-top:calc(60px + env(safe-area-inset-top))}#ov>.ovb.pass .box{pointer-events:auto;max-height:70vh}
 .box{width:min(560px,94vw);max-height:92vh;overflow-y:auto;background:rgba(14,17,24,.95);border:1px solid var(--ln);border-radius:18px;padding:14px;touch-action:pan-y}
 .death{position:absolute;left:0;right:0;bottom:0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,0));text-align:center}
 .death h2{margin:0;font-size:24px}.death .k{color:var(--red)}

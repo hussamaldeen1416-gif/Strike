@@ -433,7 +433,7 @@ function applyDamage(dmg, from, w, head) {
 }
 function die(killer, w, head) {
   if (!P.alive) return;
-  P.alive = false; P.hp = 0; P.deadAt = T(); P.killer = killer; P.kw = w; P.kh = head; P.d++; P.streak = 0; P.ads = 0;
+  P.alive = false; P.hp = 0; P.deadAt = T(); P.killer = killer; P.kw = w; P.kh = head; P.d++; P.streak = 0; P.ads = 0; G.board = false; IN.fire = false; IN.fireTouch.clear();
   STATS.d++; saveStats();
   const me = meA(); if (me) { me.alive = false; me.deadT = 0; me.x = P.x; me.y = P.y; me.z = P.z; me.yaw = P.yaw; }
   emit(['d', killer, w, head ? 1 : 0]);
@@ -871,7 +871,7 @@ touchEl.addEventListener('pointerdown', e => {
     if (id === 'bFire' || id === 'bFire2') { IN.fireTouch.add(e.pointerId); IN.fire = true; TP.set(e.pointerId, { r: 'look', x: e.clientX, y: e.clientY, btn: b }); }
     else if (id === 'bAds') { IN.adsT = !IN.adsT; TP.set(e.pointerId, { r: 'btn', btn: b }); }
     else if (id === 'bJump') { IN.jump = 1; TP.set(e.pointerId, { r: 'look', x: e.clientX, y: e.clientY, btn: b }); }
-    else { TP.set(e.pointerId, { r: 'btn', btn: b }); if (id === 'bReload') IN.reload = 1; else if (id === 'bNade') IN.nade = 1; else if (id === 'bKnife') IN.knife = 1; else if (id === 'bSwap') IN.swap = 1; else if (id === 'bCam') toggleCam(); else if (id === 'bBoard') { G.board = !G.board; } else if (id === 'bPause') togglePause(); }
+    else { TP.set(e.pointerId, { r: 'btn', btn: b }); if (id === 'bReload') IN.reload = 1; else if (id === 'bNade') IN.nade = 1; else if (id === 'bKnife') IN.knife = 1; else if (id === 'bSwap') IN.swap = 1; else if (id === 'bCam') toggleCam(); else if (id === 'bBoard') { G.board = G.ov !== 'board'; if (!G.board) closeOv('board'); } else if (id === 'bPause') togglePause(); }
     try { touchEl.setPointerCapture(e.pointerId); } catch (_) { }
     return;
   }
@@ -937,6 +937,7 @@ function hud(dt) {
   drawTags();
   if (SET.fps) { hud.fc = (hud.fc || 0) + 1; if (t - (hud.ft || 0) > 1) { $('#fpsBox').textContent = hud.fc + ' fps · ' + (R.triCount | 0) + ' tri'; hud.fc = 0; hud.ft = t; } } else if (hud.ft) { $('#fpsBox').textContent = ''; hud.ft = 0; }
   if (G.board && G.ov !== 'board' && !G.ov) showBoard(); else if (!G.board && G.ov === 'board') closeOv();
+  else if (G.ov === 'board' && t - (G.boardAt || 0) > 1) { const bx = $('#ov .box'); if (bx) { const h = boardHTML(board(), G.M); if (bx.__h !== h) { bx.__h = h; bx.firstElementChild.outerHTML = h; } } G.boardAt = t; }
   if (G.ov === 'death') updateDeath();
   $('#rotate').style.display = TOUCH && innerHeight > innerWidth ? 'flex' : 'none';
 }
@@ -978,7 +979,7 @@ function updateAimSeen() { // enemy name appears when you look at them
 }
 
 // ============================== overlays ==============================
-function closeOv(only) { if (only && G.ov !== only) return; G.ov = null; $('#ov').innerHTML = ''; G.paused = false; }
+function closeOv(only) { if (only && G.ov !== only) return; if (G.ov === 'board') G.board = false; G.ov = null; $('#ov').innerHTML = ''; G.paused = false; }
 function ovHTML(h, k) { G.ov = k; $('#ov').innerHTML = h; }
 function showDeath() {
   ovHTML(`<div class="death"><h2 id="dTitle"></h2><div class="mut" id="dSub"></div>
@@ -1002,7 +1003,7 @@ function boardHTML(rows, M) {
   const tr = r => `<tr class="${teams ? (r.team === myTeam() ? 'a' : 'b') : ''} ${r.me ? 'me' : ''}"><td>${r.bot ? '🤖 ' : ''}${esc(r.name)}</td><td>${gun ? (r.gs + 1) + '/' + GUNGAME.length : r.k}</td><td>${r.d}</td></tr>`;
   return `<table class="tbl"><tr><th>اللاعب</th><th>${gun ? 'السلاح' : 'قتلات'}</th><th>موت</th></tr>${rows.map(tr).join('')}</table>`;
 }
-function showBoard() { ovHTML(`<div class="ovb" style="background:rgba(0,0,0,.35)"><div class="box">${boardHTML(board(), G.M)}</div></div>`, 'board'); }
+function showBoard() { ovHTML(`<div class="ovb pass"><div class="box" data-act="closeBoard">${boardHTML(board(), G.M)}<div class="mut" style="text-align:center;margin-top:8px">اضغط هنا أو 📋 عشان تقفلها</div></div></div>`, 'board'); G.boardAt = T(); }
 function showEnd() {
   const M = G.M; if (!M) return; G.endShown = M.id; G.inMatch = false; P.alive = false; if (document.pointerLockElement) document.exitPointerLock();
   const mode = MODES[M.mode]; let title, won;
@@ -1122,6 +1123,7 @@ const ACT = {
   again() { if (!G.host || !G.M) return; if (G.room && G.room.local) { hostStart(); return; } G.M.ph = 'lobby'; G.pub.M = ''; toLobby(); },
   leave() { leaveRoom(); },
   resume() { closeOv(); },
+  closeBoard() { G.board = false; closeOv('board'); },
   respawn() { if (respawnReady()) spawnMe(); },
   swTeam() { const cur = myTeam(); G.wq = (G.wq || 0) + 1; if (G.host) { G.M.T[meId()] = 1 - cur; G.pub.M = ''; renderMenu(); } else G.room.presence({ wt: 1 - cur, wq: G.wq }); },
   share() { const url = location.href.split('?')[0].split('#')[0] + '?r=' + G.room.code; const text = `تعال العب معي ضربة الديرة 🔫 كود الغرفة: ${G.room.code}`; if (navigator.share) navigator.share({ title: 'ضربة الديرة', text, url }).catch(() => { }); else ACT.copy(url); },
@@ -1217,6 +1219,6 @@ async function boot() {
     NET = await window.makeNet(window.FBAPI, cfg); netState = 'ok'; renderMenu();
   } catch (e) { console.warn(e); netState = 'off'; netWhy = (e && (e.code || e.message)) || 'x'; renderMenu(); }
 }
-window.__dbg = { G, P, IN, ACT, R, SET, PROF, get W() { return G.W; }, spawnMe, emit, board, shoot, melee, throwNade, hostStart, createRoom, joinRoom, leaveRoom, WEAPONS, MAPS, CHARS, rayActors, meId, myTeam, curW, curS };
+window.__dbg = { G, P, IN, ACT, R, SET, PROF, die, applyDamage, get W() { return G.W; }, spawnMe, emit, board, shoot, melee, throwNade, hostStart, createRoom, joinRoom, leaveRoom, WEAPONS, MAPS, CHARS, rayActors, meId, myTeam, curW, curS };
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
 boot();
