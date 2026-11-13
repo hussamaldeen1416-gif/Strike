@@ -1,8 +1,8 @@
 // ضربة الديرة — main game
-import * as EN from './engine.js?v=10';
-import * as D from './data.js?v=10';
+import * as EN from './engine.js?v=11';
+import * as D from './data.js?v=11';
 // all game files must come from the same update (the iPad sometimes renames downloads to "game 2.js")
-const GAME_V = 10;
+const GAME_V = 11;
 if (D.VERSION !== GAME_V || window.__V !== GAME_V || EN.ENGINE_V !== GAME_V) {
   const m = document.getElementById('bootMsg');
   if (m) m.innerHTML = '📦 ملفات اللعبة مو من نفس التحديث<br><small>ارفع <b>index.html</b> و <b>game.js</b> و <b>data.js</b> و <b>engine.js</b> مع بعض (تأكد من الأسماء بالضبط)</small>';
@@ -1337,10 +1337,11 @@ touchEl.addEventListener('pointerdown', e => {
     return;
   }
   const W = innerWidth, H = innerHeight;
+  if (IN.joy && !TP.has(IN.joy.id)) IN.joy = null;
   if (!IN.joy && e.clientX < W * .5) {
-    const [cx, cy, w] = joyRest(), near = Math.hypot(e.clientX - cx, e.clientY - cy) < w * 1.05;
+    const [cx, cy, w] = joyRest(), near = Math.hypot(e.clientX - cx, e.clientY - cy) < w * 1.1;
     // fixed stick: start it when the thumb lands on/near it (or anywhere low on the left);  floating: start where the thumb lands
-    if (SET.joyF ? (e.clientX < W * .45 && e.clientY > H * .28) : (near || (e.clientX < W * .4 && e.clientY > H * .45))) {
+    if (SET.joyF ? (e.clientX < W * .45 && e.clientY > H * .28) : near) {
       let x0 = cx, y0 = cy;
       if (SET.joyF) { x0 = e.clientX; y0 = e.clientY; $('#joy').style.transform = `translate(${x0 - cx}px,${y0 - cy}px)`; }
       IN.joy = { id: e.pointerId, x: x0, y: y0, max: w * .36, mag: 0 }; TP.set(e.pointerId, { r: 'joy' }); joyMove(e.clientX, e.clientY);
@@ -1362,9 +1363,20 @@ function touchEnd(e) {
   if (IN.fireTouch.delete(e.pointerId) && !IN.fireTouch.size) IN.fire = false;
   if (r.r === 'joy') { IN.joy = null; IN.mx = 0; IN.mz = 0; const j = $('#joy'); j.style.transform = ''; j.classList.remove('run'); $('#joyK').style.transform = ''; }
 }
-touchEl.addEventListener('pointerup', touchEnd); touchEl.addEventListener('pointercancel', touchEnd);
+touchEl.addEventListener('pointerup', touchEnd); touchEl.addEventListener('pointercancel', touchEnd); touchEl.addEventListener('lostpointercapture', touchEnd);
+addEventListener('pointerup', e => { if (TP.has(e.pointerId)) touchEnd(e); }, true); addEventListener('pointercancel', e => { if (TP.has(e.pointerId)) touchEnd(e); }, true);
+// let go of everything: used when a release can get lost (screen change, pause, app switch, all fingers up)
+function resetTouch() {
+  for (const r of TP.values()) if (r.btn) r.btn.classList.remove('act');
+  TP.clear(); IN.fireTouch.clear(); IN.fire = false; IN.joy = null; IN.mx = 0; IN.mz = 0; keyAxes();
+  const j = $('#joy'); j.style.transform = ''; j.classList.remove('run'); $('#joyK').style.transform = '';
+}
+const allUp = e => { if (!e.touches.length && (TP.size || IN.joy)) resetTouch(); };
+addEventListener('touchend', allUp, true); addEventListener('touchcancel', allUp, true);
+addEventListener('blur', () => { IN.keys = {}; resetTouch(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { IN.keys = {}; resetTouch(); } });
 function toggleCam() { P.tpp = !P.tpp; SET.tpp = P.tpp ? 1 : 0; saveSet(); toast(P.tpp ? '🎥 منظور الشخص الثالث' : '👁️ منظور الشخص الأول'); }
-function togglePause() { if (G.scr !== 'match') return; if (G.ov === 'pause') closeOv(); else { if (document.pointerLockElement) document.exitPointerLock(); showPause(); } }
+function togglePause() { if (G.scr !== 'match') return; if (G.ov === 'pause') closeOv(); else { if (document.pointerLockElement) document.exitPointerLock(); resetTouch(); showPause(); } }
 
 // ============================== HUD ==============================
 const tagPos = [0, 0, 0];
@@ -1488,6 +1500,7 @@ function showEnd() {
 // ============================== menus ==============================
 G.setup = Object.assign({ mode: 0, map: 0, nb: 4, df: 1 }, lsGet('ds_setup', {}));
 function setScr(s) {
+  if (s !== G.scr) resetTouch();
   G.scr = s; const inM = s === 'match';
   $('#hud').classList.toggle('hidden', !inM); $('#touch').classList.toggle('hidden', !(inM && TOUCH));
   if (!inM) { $('#tags').innerHTML = ''; for (const a of G.actors.values()) a.tag = null; }
@@ -1800,6 +1813,6 @@ async function boot() {
     NET = await window.makeNet(window.FBAPI, cfg); netState = 'ok'; renderMenu();
   } catch (e) { console.warn(e); netState = 'off'; netWhy = (e && (e.code || e.message)) || 'x'; renderMenu(); }
 }
-window.__dbg = { renderMenu, look, VC, vcCan, vcButton, G, P, IN, ACT, R, SET, PROF, die, applyDamage, get W() { return G.W; }, spawnMe, emit, board, shoot, melee, throwNade, hostStart, createRoom, joinRoom, leaveRoom, WEAPONS, MAPS, CHARS, rayActors, meId, myTeam, curW, curS };
+window.__dbg = { renderMenu, look, togglePause, resetTouch, VC, vcCan, vcButton, G, P, IN, ACT, R, SET, PROF, die, applyDamage, get W() { return G.W; }, spawnMe, emit, board, shoot, melee, throwNade, hostStart, createRoom, joinRoom, leaveRoom, WEAPONS, MAPS, CHARS, rayActors, meId, myTeam, curW, curS };
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });
 boot();

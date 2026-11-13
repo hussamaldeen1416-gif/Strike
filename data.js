@@ -1,6 +1,6 @@
 // ضربة الديرة — weapons, characters, modes and maps
-import { hex } from './engine.js?v=10';
-export const VERSION = 10;
+import { hex } from './engine.js?v=11';
+export const VERSION = 11;
 
 // spread in degrees, ranges in meters, rl = reload seconds, spd = move speed multiplier
 export const WEAPONS = [

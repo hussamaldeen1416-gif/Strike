@@ -40,7 +40,7 @@ export const M4 = {
   rx(m, a){ const c=Math.cos(a), s=Math.sin(a); for(let i=0;i<4;i++){ const y=m[4+i], z=m[8+i]; m[4+i]=y*c+z*s; m[8+i]=z*c-y*s; } return m; },
   rz(m, a){ const c=Math.cos(a), s=Math.sin(a); for(let i=0;i<4;i++){ const x=m[i], y=m[4+i]; m[i]=x*c+y*s; m[4+i]=y*c-x*s; } return m; },
 };
-export const ENGINE_V = 10;
+export const ENGINE_V = 11;
 export const hex = h => [((h>>16)&255)/255, ((h>>8)&255)/255, (h&255)/255];
 
 // ---------------- unit cube (24 verts) ----------------
